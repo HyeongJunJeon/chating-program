@@ -65,7 +65,13 @@ const IsModalAboutSign = (props: any) => {
               )}
         </InputBox>
 
-        <BtnAboutSign>
+        <BtnAboutSign
+          onClick={() =>
+            props.title === "회원가입" &&
+            alert(`회원가입이 완료되었습니다!
+로그인을 진행해주세요.`)
+          }
+        >
           {props.title === "회원가입" ? "회원가입" : "로그인"}
         </BtnAboutSign>
       </Wrapper>
@@ -144,6 +150,7 @@ const InputBox = styled.div`
     background-color: #f5f5f5;
     border: none;
     border-radius: 5px;
+    outline: none;
   }
 `;
 
