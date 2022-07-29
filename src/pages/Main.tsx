@@ -7,7 +7,7 @@ export interface AboutSign {
   text: string;
 }
 
-function App() {
+function Main() {
   const [isSignUpModal, setIsSignUpModal] = useState(false);
   const [isSignInModal, setIsSignInModal] = useState(false);
 
@@ -18,32 +18,6 @@ function App() {
   const signInModalOnOff = () => {
     setIsSignInModal(!isSignInModal);
   };
-
-  const SIGN_UP_DATA: Array<AboutSign> = [
-    {
-      type: "name",
-      text: "이름",
-    },
-    {
-      type: "email",
-      text: "이메일",
-    },
-    {
-      type: "password",
-      text: "비밀번호",
-    },
-  ];
-
-  const SIGN_IN_DATA: Array<AboutSign> = [
-    {
-      type: "email",
-      text: "이메일",
-    },
-    {
-      type: "password",
-      text: "비밀번호",
-    },
-  ];
 
   return (
     <Wrapper>
@@ -62,14 +36,12 @@ function App() {
 
       {isSignUpModal && (
         <IsModalAboutSign
-          signUpData={SIGN_UP_DATA}
           title="회원가입"
           signUpModalOnOff={signUpModalOnOff}
         ></IsModalAboutSign>
       )}
       {isSignInModal && (
         <IsModalAboutSign
-          signInData={SIGN_IN_DATA}
           title="로그인"
           signInModalOnOff={signInModalOnOff}
         ></IsModalAboutSign>
@@ -78,7 +50,7 @@ function App() {
   );
 }
 
-export default App;
+export default Main;
 
 const Wrapper = styled.section`
   box-sizing: border-box;

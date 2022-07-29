@@ -1,7 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../../services/firebase";
+import { setDoc, doc, Timestamp } from "firebase/firestore";
 import styled from "styled-components";
 
 const IsModalAboutSign = (props: any) => {
+  const [data, setData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    error: "",
+    loading: false,
+  });
+
+  const { name, email, password, error, loading } = data;
+
+  const handleChange = (e: { target: { name: any; value: any } }) => {
+    setData({ ...data, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    setData({ ...data, error: "", loading: true });
+    if (!name || !email || !password) {
+      setData({ ...data, error: "모든 정보를 입력하세요!" });
+    }
+    try {
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      await setDoc(doc(db, "users", result.user.uid), {
+        uid: result.user.uid,
+        name,
+        email,
+        createdAt: Timestamp.fromDate(new Date()),
+        isOnline: true,
+      });
+      setData({ name: "", email: "", password: "", error: "", loading: false });
+    } catch (err) {
+      setData({ ...data, error: "모든 정보를 입력하세요!", loading: false });
+    }
+  };
   return (
     <>
       <Background
@@ -28,52 +69,49 @@ const IsModalAboutSign = (props: any) => {
         <div className="title">{props.title}</div>
 
         <InputBox>
-          {props.title === "회원가입"
-            ? props.signUpData.map(
-                (
-                  data: {
-                    text: string;
-                    type: string;
-                  },
-                  index: React.Key
-                ) => {
-                  return (
-                    <input
-                      key={index}
-                      type={data.type}
-                      placeholder={data.text}
-                    ></input>
-                  );
-                }
-              )
-            : props.signInData.map(
-                (
-                  data: {
-                    text: string;
-                    type: string;
-                  },
-                  index: React.Key
-                ) => {
-                  return (
-                    <input
-                      key={index}
-                      type={data.type}
-                      placeholder={data.text}
-                    ></input>
-                  );
-                }
-              )}
+          {props.title === "회원가입" ? (
+            <>
+              <input
+                name="name"
+                type="name"
+                placeholder="이름"
+                value={name}
+                onChange={handleChange}
+              ></input>
+              <input
+                name="email"
+                type="email"
+                placeholder="이메일"
+                value={email}
+                onChange={handleChange}
+              ></input>
+              <input
+                name="password"
+                type="password"
+                placeholder="비밀번호 (6 자리이상 입력해주세요)"
+                value={password}
+                onChange={handleChange}
+              ></input>
+            </>
+          ) : (
+            <>
+              <input name="email" type="email" placeholder="이메일"></input>
+              <input
+                name="password"
+                type="password"
+                placeholder="비밀번호"
+              ></input>
+            </>
+          )}
         </InputBox>
 
-        <BtnAboutSign
-          onClick={() =>
-            props.title === "회원가입" &&
-            alert(`회원가입이 완료되었습니다!
-로그인을 진행해주세요.`)
-          }
-        >
-          {props.title === "회원가입" ? "회원가입" : "로그인"}
-        </BtnAboutSign>
+        {error ? <ErrorText>{error}</ErrorText> : null}
+
+        {props.title === "회원가입" ? (
+          <BtnAboutSign onClick={handleSubmit}>회원가입</BtnAboutSign>
+        ) : (
+          <BtnAboutSign>로그인</BtnAboutSign>
+        )}
       </Wrapper>
     </>
   );
@@ -152,6 +190,11 @@ const InputBox = styled.div`
     border-radius: 5px;
     outline: none;
   }
+`;
+
+const ErrorText = styled.p`
+  color: red;
+  font-weight: 700;
 `;
 
 const BtnAboutSign = styled.button`
