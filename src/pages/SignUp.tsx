@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../../services/firebase";
+import { auth, db } from "../services/firebase";
 import { setDoc, doc, Timestamp } from "firebase/firestore";
 import styled from "styled-components";
 
-const IsModalAboutSign = (props: any) => {
+const SignUp = (props: any) => {
   const [data, setData] = useState({
     name: "",
     email: "",
@@ -39,85 +39,60 @@ const IsModalAboutSign = (props: any) => {
         isOnline: true,
       });
       setData({ name: "", email: "", password: "", error: "", loading: false });
+      props.signUpModalOnOff();
     } catch (err) {
       setData({ ...data, error: "모든 정보를 입력하세요!", loading: false });
     }
   };
   return (
     <>
-      <Background
-        onClick={
-          props.title === "회원가입"
-            ? props.signUpModalOnOff
-            : props.signInModalOnOff
-        }
-      />
-      <Wrapper>
+      <Background onClick={props.signUpModalOnOff} />
+      <SignUpWrapper>
         <CloseBtn>
-          <i
-            className="fa-solid fa-x"
-            onClick={
-              props.title === "회원가입"
-                ? props.signUpModalOnOff
-                : props.signInModalOnOff
-            }
-          ></i>
+          <i className="fa-solid fa-x" onClick={props.signUpModalOnOff}></i>
         </CloseBtn>
         <MainIcon>
           <i className="fa-solid fa-computer"></i>
         </MainIcon>
-        <div className="title">{props.title}</div>
+        <div className="title">회원가입</div>
 
         <InputBox>
-          {props.title === "회원가입" ? (
-            <>
-              <input
-                name="name"
-                type="name"
-                placeholder="이름"
-                value={name}
-                onChange={handleChange}
-              ></input>
-              <input
-                name="email"
-                type="email"
-                placeholder="이메일"
-                value={email}
-                onChange={handleChange}
-              ></input>
-              <input
-                name="password"
-                type="password"
-                placeholder="비밀번호 (6 자리이상 입력해주세요)"
-                value={password}
-                onChange={handleChange}
-              ></input>
-            </>
-          ) : (
-            <>
-              <input name="email" type="email" placeholder="이메일"></input>
-              <input
-                name="password"
-                type="password"
-                placeholder="비밀번호"
-              ></input>
-            </>
-          )}
+          <>
+            <input
+              name="name"
+              type="name"
+              placeholder="이름"
+              value={name}
+              onChange={handleChange}
+            ></input>
+            <input
+              name="email"
+              type="email"
+              placeholder="이메일"
+              value={email}
+              onChange={handleChange}
+            ></input>
+            <input
+              name="password"
+              type="password"
+              placeholder="비밀번호 (6 자리이상 입력해주세요)"
+              value={password}
+              onChange={handleChange}
+            ></input>
+          </>
         </InputBox>
 
         {error ? <ErrorText>{error}</ErrorText> : null}
 
-        {props.title === "회원가입" ? (
-          <BtnAboutSign onClick={handleSubmit}>회원가입</BtnAboutSign>
-        ) : (
-          <BtnAboutSign>로그인</BtnAboutSign>
-        )}
-      </Wrapper>
+        <BtnAboutSign onClick={handleSubmit} disabled={loading}>
+          {loading ? "회원 가입 중입니다..." : "회원가입"}
+        </BtnAboutSign>
+      </SignUpWrapper>
     </>
   );
 };
 
-export default IsModalAboutSign;
+export default SignUp;
 
 const Background = styled.div`
   position: fixed;
@@ -129,7 +104,7 @@ const Background = styled.div`
   left: 0;
 `;
 
-const Wrapper = styled.section`
+const SignUpWrapper = styled.section`
   box-sizing: border-box;
   margin: 0 auto;
   width: 800px;

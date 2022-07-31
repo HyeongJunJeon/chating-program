@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import IsModalAboutSign from "./IsModalAboutSign/IsModalAboutSign";
-
-export interface AboutSign {
-  type: string;
-  text: string;
-}
+import SignUp from "./SignUp";
+import SignIn from "./SignIn";
 
 function Main() {
   const [isSignUpModal, setIsSignUpModal] = useState(false);
@@ -20,7 +16,7 @@ function Main() {
   };
 
   return (
-    <Wrapper>
+    <MainWrapper>
       <MainIcon>
         <i className="fa-solid fa-computer"></i>
       </MainIcon>
@@ -29,30 +25,20 @@ function Main() {
         Communication Program
       </div>
 
-      <div className="middleText">똑똑, 내마음을 두드리는 공간</div>
+      <div className="middleText">똑TALK, 마음을 두드리는 공간</div>
 
       <SignUpBtn onClick={signUpModalOnOff}>회원가입</SignUpBtn>
       <SignInBtn onClick={signInModalOnOff}>로그인</SignInBtn>
 
-      {isSignUpModal && (
-        <IsModalAboutSign
-          title="회원가입"
-          signUpModalOnOff={signUpModalOnOff}
-        ></IsModalAboutSign>
-      )}
-      {isSignInModal && (
-        <IsModalAboutSign
-          title="로그인"
-          signInModalOnOff={signInModalOnOff}
-        ></IsModalAboutSign>
-      )}
-    </Wrapper>
+      {isSignUpModal && <SignUp signUpModalOnOff={signUpModalOnOff}></SignUp>}
+      {isSignInModal && <SignIn signInModalOnOff={signInModalOnOff}></SignIn>}
+    </MainWrapper>
   );
 }
 
 export default Main;
 
-const Wrapper = styled.section`
+const MainWrapper = styled.section`
   box-sizing: border-box;
   margin: 0 auto;
   width: 1100px;
