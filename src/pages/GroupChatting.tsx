@@ -17,39 +17,45 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
-import User from "../component/User";
 import MessageForm from "../component/MessageForm";
 import Message from "../component/Message";
+import Room from "../component/Room";
 
-const ChattingMain = () => {
-  const [users, setUsers] = useState([]);
+//room컬렉션에 대화방을 생성하면 각 대화방의 uid가 생성되고,
+//동일한 uid안에서 채팅을 하면 각 대화방에 chat컬렉션안에 저장.
+//room컬렉션안에 part테이블을 생성해서 참여하는 user의 uid를 입력해서
+//part테이블에 포함되있으면 대화방이 보이면서 그룹채팅이 구현될거라 생각했다.
+//하지만 구현이 잘 되지않았다.
+//다시 공부해서 해결방법을 다시 찾아야 할 것같다.
+
+const GroupChatting = () => {
   const [chat, setChat] = useState<any>("");
   const [text, setText] = useState<any>("");
   const [img, setImg] = useState<any>("");
   const [msgs, setMsgs] = useState<any>([]);
+  const [rooms, setRooms] = useState<any>([]);
 
   const user1 = auth.currentUser.uid;
 
   useEffect(() => {
-    const usersRef = collection(db, "users");
+    const usersRef = collection(db, "room");
     const q = query(usersRef, where("uid", "not-in", [user1]));
     const unsub = onSnapshot(q, (querySnapshot) => {
-      let users: DocumentData[] = [];
+      let rooms: DocumentData[] = [];
       querySnapshot.forEach((doc) => {
-        users.push(doc.data());
+        rooms.push(doc.data());
       });
-      setUsers(users);
+      setRooms(rooms);
     });
     return () => unsub();
   }, []);
 
-  const selectUser = async (user: any) => {
-    setChat(user);
+  const selectRoom = async (room: any) => {
+    setChat(room);
 
-    const user2 = user.uid;
-    const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
+    const user2 = room.uid;
 
-    const msgsRef = collection(db, "messages", id, "chat");
+    const msgsRef = collection(db, "messgaes", user2, "chat");
     const q = query(msgsRef, orderBy("createdAt", "asc"));
 
     onSnapshot(q, (querySnapshot) => {
@@ -59,20 +65,12 @@ const ChattingMain = () => {
       });
       setMsgs(msgs);
     });
-
-    const docSnap = await getDoc(doc(db, "lastMsg", id));
-
-    if (docSnap.data() && docSnap.data().from !== user1) {
-      await updateDoc(doc(db, "lastMsg", id), { unread: false });
-    }
   };
 
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
+  const handleAddRoom = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
     const user2 = chat.uid;
-
-    const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
 
     let url;
     if (img) {
@@ -85,44 +83,53 @@ const ChattingMain = () => {
       url = dlUrl;
     }
 
-    await addDoc(collection(db, "messages", id, "chat"), {
+    await addDoc(collection(db, "room", user2, "chat"), {
       text,
       from: user1,
       to: user2,
       createdAt: Timestamp.fromDate(new Date()),
       media: url || "",
-    });
-
-    await setDoc(doc(db, "lastMsg", id), {
-      text,
-      from: user1,
-      to: user2,
-      createdAt: Timestamp.fromDate(new Date()),
-      media: url || "",
-      unread: true,
     });
 
     setText("");
   };
 
+  let valid;
+
+  for (let i = 0; i < 3; i++) {
+    //room컬렉션에 part테이블안에 해당 user에 uid가 있는지 검사.
+    for (let j = 0; j < 3; j++) {
+      if (rooms[i]?.part[j] === user1) {
+        valid = 1;
+      }
+    }
+  }
+
   return (
     <>
       <NavBar />
       <ChattingMainWrapper>
-        <UserContainer>
-          {users.map((user) => (
-            <User
-              key={user.uid}
-              user={user}
-              selectUser={selectUser}
+        <RoomContainer>
+          <CreateRoomWrapper>
+            <span>대화방 생성</span>
+            <span className="addRoom" onClick={handleAddRoom}>
+              +
+            </span>
+          </CreateRoomWrapper>
+
+          {rooms.map((room: { uid: any }) => (
+            <Room
+              key={room.uid}
+              room={room}
+              selectRoom={selectRoom}
               user1={user1}
               chat={chat}
             />
           ))}
-        </UserContainer>
+        </RoomContainer>
 
         <MessageContainer>
-          {chat ? (
+          {valid ? (
             <>
               <div className="messagesUser">
                 <h3>{chat.name}</h3>
@@ -135,7 +142,7 @@ const ChattingMain = () => {
                   : null}
               </div>
               <MessageForm
-                handleSubmit={handleSubmit}
+                handleAddRoom={handleAddRoom}
                 text={text}
                 setText={setText}
                 setImg={setImg}
@@ -150,7 +157,7 @@ const ChattingMain = () => {
   );
 };
 
-export default ChattingMain;
+export default GroupChatting;
 
 const ChattingMainWrapper = styled.div`
   position: relative;
@@ -160,7 +167,22 @@ const ChattingMainWrapper = styled.div`
   height: calc(100vh - 70px);
 `;
 
-const UserContainer = styled.div`
+const CreateRoomWrapper = styled.div`
+  height: 50px;
+  margin: 0 10px;
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .addRoom {
+    font-size: 30px;
+    color: #ff665c;
+    cursor: pointer;
+  }
+`;
+
+const RoomContainer = styled.div`
   margin-top: 10px;
   border-right: 2px solid #ff665c;
   overflow-y: auto;
@@ -177,7 +199,6 @@ const MessageContainer = styled.div`
   }
 
   .messages {
-    /* max-width: 1100px; */
     height: calc(100vh - 200px);
     overflow-y: auto;
     overflow-x: hidden;

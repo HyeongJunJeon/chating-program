@@ -5,7 +5,11 @@ import { updateDoc, doc } from "firebase/firestore";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-const SignIn = (props: any) => {
+interface Props {
+  signInModalOnOff(): void;
+}
+
+const SignIn = ({ signInModalOnOff }: Props) => {
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -41,10 +45,10 @@ const SignIn = (props: any) => {
   };
   return (
     <>
-      <Background onClick={props.signInModalOnOff} />
+      <Background onClick={signInModalOnOff} />
       <SignInWrapper>
         <CloseBtn>
-          <i className="fa-solid fa-x" onClick={props.signInModalOnOff}></i>
+          <i className="fa-solid fa-x" onClick={signInModalOnOff}></i>
         </CloseBtn>
         <MainIcon>
           <i className="fa-solid fa-computer"></i>

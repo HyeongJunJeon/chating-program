@@ -4,8 +4,8 @@ import Img from "../img/image1.jpg";
 import { onSnapshot, doc } from "firebase/firestore";
 import { db } from "../services/firebase";
 
-const User = ({ user, selectUser, user1, chat }: any) => {
-  const user2 = user?.uid;
+const Room = ({ room, selectUser, user1, chat }: any) => {
+  const user2 = room?.part;
   const [data, setData] = useState<any>("");
 
   useEffect(() => {
@@ -19,24 +19,24 @@ const User = ({ user, selectUser, user1, chat }: any) => {
   return (
     <UserWrapper>
       <div
-        className={`userWrapper ${chat.name === user.name && "selectedUser"}`}
+        className={`userWrapper ${chat.name === room.name && "selectRoom"}`}
         onClick={() => {
-          selectUser(user);
+          selectUser(room);
         }}
       >
-        <UserInfo>
-          <UserDetail>
-            <img src={user.avatar || Img} alt="avatar" />
-            <h4>{user.name}</h4>
+        <RoomInfo>
+          <RoomDetail>
+            <img src={room.avatar || Img} alt="avatar" />
+            <h4>{room.name}</h4>
             {data?.from !== user1 && data?.unread && (
-              <small className="unread">New Knock</small>
+              <small className="unread">새 메세지</small>
             )}
-          </UserDetail>
+          </RoomDetail>
 
           <div
-            className={`userStatus ${user.isOnline ? "online" : "offline"}`}
+            className={`userStatus ${room.isOnline ? "online" : "offline"}`}
           ></div>
-        </UserInfo>
+        </RoomInfo>
         {data && (
           <p className="truncate">
             <strong>{data.from === user1 ? "나:" : null}</strong>
@@ -48,7 +48,7 @@ const User = ({ user, selectUser, user1, chat }: any) => {
   );
 };
 
-export default User;
+export default Room;
 
 const UserWrapper = styled.div`
   margin-bottom: 10px;
@@ -62,7 +62,7 @@ const UserWrapper = styled.div`
     border: 1px solid black;
   }
 
-  .selectedUser {
+  .selectRoom {
     background-color: #ff665c;
     opacity: 0.6;
     border-radius: 10px;
@@ -83,8 +83,8 @@ const UserWrapper = styled.div`
 
   .unread {
     margin-left: 10px;
-    background-color: white;
-    color: red;
+    background-color: black;
+    color: white;
     padding: 2px 4px;
     border-radius: 10px;
   }
@@ -104,13 +104,13 @@ const UserWrapper = styled.div`
   }
 `;
 
-const UserInfo = styled.div`
+const RoomInfo = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
 `;
 
-const UserDetail = styled.div`
+const RoomDetail = styled.div`
   display: flex;
   align-items: center;
 

@@ -4,7 +4,11 @@ import { auth, db } from "../services/firebase";
 import { setDoc, doc, Timestamp } from "firebase/firestore";
 import styled from "styled-components";
 
-const SignUp = (props: any) => {
+interface Props {
+  signUpModalOnOff(): void;
+}
+
+const SignUp = ({ signUpModalOnOff }: Props) => {
   const [data, setData] = useState({
     name: "",
     email: "",
@@ -39,17 +43,17 @@ const SignUp = (props: any) => {
         isOnline: true,
       });
       setData({ name: "", email: "", password: "", error: "", loading: false });
-      props.signUpModalOnOff();
+      signUpModalOnOff();
     } catch (err) {
       setData({ ...data, error: "모든 정보를 입력하세요!", loading: false });
     }
   };
   return (
     <>
-      <Background onClick={props.signUpModalOnOff} />
+      <Background onClick={signUpModalOnOff} />
       <SignUpWrapper>
         <CloseBtn>
-          <i className="fa-solid fa-x" onClick={props.signUpModalOnOff}></i>
+          <i className="fa-solid fa-x" onClick={signUpModalOnOff}></i>
         </CloseBtn>
         <MainIcon>
           <i className="fa-solid fa-computer"></i>

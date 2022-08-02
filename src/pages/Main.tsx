@@ -7,11 +7,11 @@ function Main() {
   const [isSignUpModal, setIsSignUpModal] = useState(false);
   const [isSignInModal, setIsSignInModal] = useState(false);
 
-  const signUpModalOnOff = () => {
+  const signUpModalOnOff = (): void => {
     setIsSignUpModal(!isSignUpModal);
   };
 
-  const signInModalOnOff = () => {
+  const signInModalOnOff = (): void => {
     setIsSignInModal(!isSignInModal);
   };
 

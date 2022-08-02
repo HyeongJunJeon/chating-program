@@ -47,6 +47,8 @@
     ]
   },
   "devDependencies": {
-    "@types/styled-components": "^5.1.25"
+    "@types/styled-components": "^5.1.25",
+    "electron-builder": "^23.3.3"
   }
+  
 }

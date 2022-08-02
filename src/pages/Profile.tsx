@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Img from "../img/image1.jpg";
 import Camera from "../component/svg/Camera";
-import Delete from "../component/svg/Delete";
+
 import NavBar from "../component/Navbar";
 import { storage, db, auth } from "../services/firebase";
 import {
@@ -12,13 +12,10 @@ import {
   deleteObject,
 } from "firebase/storage";
 import { getDoc, doc, updateDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const [img, setImg] = useState<any>({});
   const [user, setUser] = useState<any>({});
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     getDoc(doc(db, "users", auth.currentUser.uid)).then((docSnap) => {
@@ -51,22 +48,6 @@ const Profile = () => {
     }
   }, [img]);
 
-  //   const deleteImage = async () => {
-  //     try {
-  //       const confirm = window.confirm("프로필을 지우시겠습니까?");
-  //       if (confirm) {
-  //         await deleteObject(ref(storage, user.avatarPath));
-
-  //         await updateDoc(doc(db, "users", auth.currentUser.uid), {
-  //           avatar: "",
-  //           avatarPath: "",
-  //         });
-  //         navigate("/", { replace: true });
-  //       }
-  //     } catch (err) {
-  //       console.log("err");
-  //     }
-  //   };
   return user ? (
     <>
       <NavBar />
@@ -79,7 +60,7 @@ const Profile = () => {
                 <label htmlFor="photo">
                   <Camera />
                 </label>
-                {/* {user.avatar ? <Delete deleteImage={deleteImage} /> : null} */}
+
                 <input
                   type="file"
                   accept="image/*"
@@ -94,7 +75,7 @@ const Profile = () => {
             <h3>{user.name}</h3>
             <p>{user.email}</p>
             <hr />
-            {/* <small>가입날짜: {user.createdAt.toDate().toString()}</small> */}
+
             <small>{user.name}님! 프로필 사진도 바꿔보세요!</small>
           </TextContainer>
         </ProfileContainer>

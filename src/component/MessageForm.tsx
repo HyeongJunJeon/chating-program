@@ -26,7 +26,7 @@ const MessageForm = (props: any) => {
           }}
         />
       </div>
-      <SendBtn className="btn">보내기</SendBtn>
+      <SendBtn className="btn">전송</SendBtn>
     </Form>
   );
 };
@@ -51,4 +51,13 @@ const Form = styled.form`
   }
 `;
 
-const SendBtn = styled.button``;
+const SendBtn = styled.button`
+  width: 10vw;
+  height: 30px;
+  font-size: 15px;
+  color: white;
+  background-color: #ff665c;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+`;
