@@ -14,4 +14,4 @@ firebase를 사용하여 데이터를 저장하여 사용하고 있습니다.
 
 ![스크린샷 2022-08-02 오후 10 59 16](https://user-images.githubusercontent.com/92135697/182393772-f21d9afc-abbd-4a8a-86b3-59b1e3802bf8.png)
 
-콜렉션탭.
+렉션탭.
